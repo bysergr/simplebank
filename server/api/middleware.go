@@ -3,10 +3,11 @@ package api
 import (
 	"errors"
 	"fmt"
-	"github.com/bysergr/simple-bank/token"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/bysergr/simple-bank/token"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -42,6 +43,12 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 		accessToken := fields[1]
 		payload, err := tokenMaker.VerifyToken(accessToken)
 		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
+			return
+		}
+
+		if payload.TokenType != token.AccessToken {
+			err := errors.New("invalid token type")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}

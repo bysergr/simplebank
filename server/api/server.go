@@ -2,13 +2,14 @@ package api
 
 import (
 	"errors"
+	"net/http"
+
 	db "github.com/bysergr/simple-bank/db/sqlc"
 	"github.com/bysergr/simple-bank/token"
 	"github.com/bysergr/simple-bank/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
-	"net/http"
 )
 
 type Server struct {
@@ -36,6 +37,7 @@ func (server *Server) setupRouter() {
 
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
+	router.POST("/token/renew_access", server.renewAccessToken)
 
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 

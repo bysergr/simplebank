@@ -2,13 +2,14 @@ package api
 
 import (
 	"fmt"
-	"github.com/bysergr/simple-bank/token"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/bysergr/simple-bank/token"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
 )
 
 func addAuthorization(
@@ -17,8 +18,9 @@ func addAuthorization(
 	tokenMaker token.Maker,
 	authorizationType string,
 	username string,
-	duration time.Duration) {
-	newToken, err := tokenMaker.CreateToken(username, duration)
+	duration time.Duration,
+) {
+	newToken, _, err := tokenMaker.CreateToken(username, token.AccessToken, duration)
 	require.NoError(t, err)
 
 	authorizationHeader := fmt.Sprintf("%s %s", authorizationType, newToken)
@@ -79,7 +81,6 @@ func TestAuthMiddleware(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-
 			server := NewTestServer(t, nil)
 
 			authPath := "/auth"

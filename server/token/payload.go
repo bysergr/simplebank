@@ -2,9 +2,10 @@ package token
 
 import (
 	"errors"
+	"time"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"time"
 )
 
 var (
@@ -21,9 +22,10 @@ type Payload struct {
 	NotBefore time.Time        `json:"not_before"`
 	IssuedAt  time.Time        `json:"issued_at"`
 	Audience  jwt.ClaimStrings `json:"audience,omitempty"`
+	TokenType tokenType        `json:"token_type,omitempty"`
 }
 
-func NewPayload(username string, duration time.Duration) (*Payload, error) {
+func NewPayload(username string, tokenType tokenType, duration time.Duration) (*Payload, error) {
 	tokenID, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
@@ -35,6 +37,7 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 		ExpiresAt: time.Now().Add(duration),
 		NotBefore: time.Now(),
 		IssuedAt:  time.Now(),
+		TokenType: tokenType,
 	}
 
 	return payload, err
